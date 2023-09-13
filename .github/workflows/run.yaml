@@ -1,8 +1,8 @@
 name: NSW Registration Data
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   schedule:
     - cron: '0 1 * * *'
   workflow_dispatch:
@@ -24,9 +24,8 @@ jobs:
     - name: Run script
       run: node run.js
       timeout-minutes: 5
-    - name: Push to data branch
+    - name: Push data
       run: |
-        cd data
         git config user.name jxeeno
         git config user.email ken+github@jxeeno.com
         git add . || exit 0
