@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const moment = require('moment');
 
 const ENDPOINT = 'https://wabi-australia-southeast-api.analysis.windows.net/public/reports/querydata?synchronous=true';
 const RESOUCE_KEY = '1918deb7-f91f-425e-babf-396dcb57352c';
@@ -24,7 +25,7 @@ async function getLatestDate(){
         "version":"1.0.0",
         "queries":[{"Query":{"Commands":[{"SemanticQueryDataShapeCommand":{"Query":{"Version":2,"From":[{"Name":"r","Entity":"Registration snapshot","Type":0}],"Select":[{"Measure":{"Expression":{"SourceRef":{"Source":"r"}},"Property":"Snapshot Effective Date Selected"},"Name":"Registration snapshot.Snapshot Effective Date Selected"}],"Where":[{"Condition":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"r"}},"Property":"Snapshot Effective Date Filter"}}],"Values":[[{"Literal":{"Value":"'Latest date'"}}]]}}}]},"Binding":{"Primary":{"Groupings":[{"Projections":[0]}]},"DataReduction":{"DataVolume":3,"Primary":{"Top":{}}},"Version":1},"ExecutionMetricsKind":1}}]},"CacheKey":"{\"Commands\":[{\"SemanticQueryDataShapeCommand\":{\"Query\":{\"Version\":2,\"From\":[{\"Name\":\"r\",\"Entity\":\"Registration snapshot\",\"Type\":0}],\"Select\":[{\"Measure\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"Snapshot Effective Date Selected\"},\"Name\":\"Registration snapshot.Snapshot Effective Date Selected\"}],\"Where\":[{\"Condition\":{\"In\":{\"Expressions\":[{\"Column\":{\"Expression\":{\"SourceRef\":{\"Source\":\"r\"}},\"Property\":\"Snapshot Effective Date Filter\"}}],\"Values\":[[{\"Literal\":{\"Value\":\"'Latest date'\"}}]]}}}]},\"Binding\":{\"Primary\":{\"Groupings\":[{\"Projections\":[0]}]},\"DataReduction\":{\"DataVolume\":3,\"Primary\":{\"Top\":{}}},\"Version\":1},\"ExecutionMetricsKind\":1}}]}","QueryId":"","ApplicationContext":{"DatasetId":"aa700f39-d638-4b5a-9f9a-cb1c0c025bb6","Sources":[{"ReportId":"e32f5ea0-e316-4713-a6b0-51f91ade3f59","VisualId":"ba0a908bec763bc34e9b"}]}}],
         "cancelQueries":[],
-        "modelId":2951452
+        "modelId": 2951452
     }, {
         headers: {
             'X-Powerbi-Resourcekey': RESOUCE_KEY
@@ -244,6 +245,9 @@ async function getForAllLgas () {
         if(requestSnapshotDate === 'Latest date'){
             snapshotDate = await getLatestDate();
         }
+
+        // make it an ISO date
+        snapshotDate = moment(snapshotDate, 'DD-MMM-YY').format('YYYY-MM-DD');
 
         const fname = `docs/data/${snapshotDate}.json`;
         if(!fs.existsSync(fname)){
